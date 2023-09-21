@@ -9,6 +9,7 @@ from scipy.stats import pointbiserialr
 def point_biserial_correlation_column_wise(df: pd.DataFrame, cont: list, cat: list):
     n = len(cont)
     m = len(cat)
+    df = df[cont + cat].astype('float64')
 
     res = np.zeros(shape=(n, m)) # to store results
     for i in range(n):
