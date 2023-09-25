@@ -8,5 +8,5 @@ Slides : https://docs.google.com/presentation/d/1a-Tj9_T7rBCXoYdU1YaQMvUkQsBjyuV
 
 Notebook: https://colab.research.google.com/drive/1NJG8KMDF-7U5FXKZmFgNjYu7D4ybSsEu?usp=sharing#scrollTo=H5W4l3jUOX7j 
 
-Docs: https://docs.google.com/presentation/d/1a-Tj9_T7rBCXoYdU1YaQMvUkQsBjyuVBzMkO3F2fw_k/edit#slide=id.p 
+Docs: [https://docs.google.com/presentation/d/1a-Tj9_T7rBCXoYdU1YaQMvUkQsBjyuVBzMkO3F2fw_k/edit#slide=id.p ](https://docs.google.com/document/d/1Ule2FVi8dbXdVDCJgXEEW4_FrAVSG0YkVaOcSPXjUjQ/edit#heading=h.nvwqgbkeuf5o)
 
