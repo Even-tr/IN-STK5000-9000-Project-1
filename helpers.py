@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import chi2_contingency
+from sklearn.metrics import accuracy_score,confusion_matrix, precision_recall_fscore_support
 
 def chi_square_column_wise(df: pd.DataFrame):
     n = len(df.columns)
@@ -127,3 +128,15 @@ def fix_obesity(df, threshold=30):
   df.loc[idx3,'Obesity'] = 1
   #df.loc[idx,]
   return df
+
+def model_summary(clf, X_test, y_test, header = True, name=''):
+   # computes the accuracy, precision and recall for a classifier and prints a standard output.
+   assert 'predict' in dir(clf), "Classifier must have a 'predict' method"
+
+   y_pred = clf.predict(X_test)
+
+   acc = accuracy_score(y_test, y_pred)
+   prec, recall, _, _ = precision_recall_fscore_support(y_test, y_pred, average='binary')
+   if header:
+      print('Accuracy\tPrecision\tRecall')
+   print(f'{acc :.2f}\t\t{prec:.2f}\t\t{recall:.2f}\t{name}')
