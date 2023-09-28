@@ -126,8 +126,8 @@ def model_summary(clf, X_test, y_test, header = True, name=''):
 def combined_outliers(df: pd.DataFrame, features: list):
    # Calculate combined outliers for continous features using euclidean norm
   assert len(features) > 1
-  df = df[features]
-  assert df.isna().sum().sum() == 0, 'No Na-s must be present'
+  df = df[features].fillna(df.mean())
+  #assert df.isna().sum().sum() == 0, 'No Na-s must be present'
   df = df.to_numpy()
   df = (df - df.mean())/(df.std()) # normalize to be indepentent of parameterization
   d = np.sqrt(np.square(df).sum(axis=1)) #Calculate square distance 
