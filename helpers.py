@@ -84,33 +84,14 @@ def outliers_min_max(df, feature, min=None, max=None):
     print("invalid feature")
     
 # Function that can be run on both training set and test set
-# TODO: Fix hypothetcial outliers in new data ...
-def handle_outliers(df):
-  # Age
-  outliers_age = outliers_min_max(df, 'Age', min=0, max=120)
-
-  #df = df.drop(outliers_age.index)
-  # Change from drop to set Nan
-  df.loc[outliers_age.index, 'Age'] = np.NaN
-
-  #print(outliers_age)
-
-  # Urination
-  # must identify from training set
-  min_urin, max_urin = outliers_IQR(df, 'Urination')
-  # can not be negative, doesnt really matter because we have no data where this is the case,
-  # can happen in "production"?
-  min_urin = max(0, min_urin)
-  outliers_urin = outliers_min_max(df, 'Urination', min_urin, max_urin)
-
-  # Remove by IQR
-  # Change to set missing
-  #df = df.drop(outliers_urin.index)
-  df.loc[outliers_urin.index, 'Urination'] = np.NaN
-
-  #print(outliers_urin[['Urination','Polydipsia']])
+def handle_outliers(df, df_bounds):
+  for f in df_bounds.index:
+      outliers = outliers_min_max(df, f,
+                                  min=df_bounds.loc[f, 'Lower'],
+                                  max=df_bounds.loc[f, 'Upper']
+                                )
+      df.loc[outliers.index, f] = np.NaN
   return df
-
 
 def BMI(weight, height):
   return weight/(height**2/(100*100))
