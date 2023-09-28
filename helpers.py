@@ -121,3 +121,15 @@ def model_summary(clf, X_test, y_test, header = True, name=''):
    if header:
       print('Accuracy\tPrecision\tRecall')
    print(f'{acc :.2f}\t\t{prec:.2f}\t\t{recall:.2f}\t{name}')
+
+
+def combined_outliers(df: pd.DataFrame, features: list):
+   # Calculate combined outliers for continous features using euclidean norm
+  assert len(features) > 1
+  df = df[features]
+  assert df.isna().sum().sum() == 0, 'No Na-s must be present'
+  df = df.to_numpy()
+  df = (df - df.mean())/(df.std()) # normalize to be indepentent of parameterization
+  d = np.sqrt(np.square(df).sum(axis=1)) #Calculate square distance 
+  z = (d-d.mean())/d.std()   # Normalize distances
+  return z
