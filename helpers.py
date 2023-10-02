@@ -54,7 +54,7 @@ def plot_pearsonsr_column_wise(df: pd.DataFrame, outfile=None, kwargs={'cmap':'c
     ax = sns.heatmap(arr, xticklabels = df.columns, yticklabels = df.columns, **kwargs)
     ax.tick_params(top=False, labeltop=True, bottom=False, labelbottom=False, left=False)
     ax.set_aspect('equal')
-    plt.title('Pearsons r column wise')
+    plt.title('Pearson\'s r column wise')
     plt.xticks(rotation = 90)
     plt.tight_layout()
 
