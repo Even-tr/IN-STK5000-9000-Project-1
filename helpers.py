@@ -17,7 +17,8 @@ def pearsonr_column_wise(df: pd.DataFrame):
             # Crosstab constructs the Contingency table for column i against j
             test_result = pearsonr(df[colnames[i]], df[colnames[j]])
             #print(test_result.pvalue)
-            res[i,j] = test_result.pvalue
+            res[i,j] = test_result.statistic
+
     return res
 
 def chi_square_column_wise(df: pd.DataFrame):
@@ -49,7 +50,7 @@ def plot_pearsonsr_column_wise(df: pd.DataFrame, outfile=None, kwargs={'cmap':'c
     kwargs: dict, optional
         key word arguments to pass to the sns plot
     """
-    arr = chi_square_column_wise(df)
+    arr = pearsonr_column_wise(df)
     ax = sns.heatmap(arr, xticklabels = df.columns, yticklabels = df.columns, **kwargs)
     ax.tick_params(top=False, labeltop=True, bottom=False, labelbottom=False, left=False)
     ax.set_aspect('equal')
