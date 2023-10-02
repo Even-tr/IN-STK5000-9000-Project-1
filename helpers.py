@@ -166,13 +166,32 @@ def model_summary(clf, X_test, y_test, header = True, name=''):
    print(f'{acc :.2f}\t\t{prec:.2f}\t\t{recall:.2f}\t{name}')
 
 
-def combined_outliers(df: pd.DataFrame, features: list):
+#def combined_outliers(df: pd.DataFrame, features: list):
+#   # Calculate combined outliers for continous features using euclidean norm
+#  assert len(features) > 1
+#  df = df[features].fillna(df.mean())
+#  #assert df.isna().sum().sum() == 0, 'No Na-s must be present'
+#  df = df.to_numpy()
+#  df = (df - df.mean())/(df.std()) # normalize to be indepentent of parameterization
+#  d = np.sqrt(np.square(df).sum(axis=1)) #Calculate square distance 
+#  z = (d-d.mean())/d.std()   # Normalize distances
+#  return z
+
+def combined_outliers(train: pd.DataFrame, features: list, test: pd.DataFrame = None):
    # Calculate combined outliers for continous features using euclidean norm
   assert len(features) > 1
-  df = df[features].fillna(df[features].mean())
-  #assert df.isna().sum().sum() == 0, 'No Na-s must be present'
-  df = df.to_numpy()
-  df = (df - df.mean())/(df.std()) # normalize to be indepentent of parameterization
-  d = np.sqrt(np.square(df).sum(axis=1)) #Calculate square distance 
-  z = (d-d.mean())/d.std()   # Normalize distances
-  return z
+  train = train[features].fillna(train.mean())
+  train = train.to_numpy()
+  train = (train - train.mean())/(train.std()) # normalize to be indepentent of parameterization
+  d_train = np.sqrt(np.square(train).sum(axis=1)) #Calculate square distance
+  z_train = (d_train-d_train.mean())/d_train.std()   # Normalize distances
+  ret = z_train
+  # If we get a test set we need to use parameters from the training set
+  if test is not None:
+     test = test[features].fillna(train.mean())
+     test = test.to_numpy()
+     test = (test - train.mean())/(train.std()) # normalize to be indepentent of parameterization
+     d_test = np.sqrt(np.square(test).sum(axis=1)) #Calculate square distance
+     z_test = (d_test-d_test.mean())/d_test.std()   # Normalize distances
+     ret = z_test
+  return ret
