@@ -73,47 +73,67 @@ Percentage of samples with 2 missing values: 0.038461538461538464
 Number of samples with 3 missing values: 2
 Percentage of samples with 3 missing values: 0.003663003663003663
 
+OUTLIERS
+      Age  Height  Weight  Temperature  Urination
+297  63.0  184.89  105.34        37.07       2.82
+29   53.0  177.45   69.55        37.27       2.68
+529  30.0  163.97   67.45        37.26       1.98
+303  45.0  168.58   65.09        36.82       2.12
+106  60.0  173.02   99.79        36.68       2.77
+..    ...     ...     ...          ...        ...
+350  70.0  178.10   75.53        37.31       2.20
+160  49.0  173.81   59.00        37.15       3.21
+458  30.0  168.30   59.62        36.79       1.24
+356  58.0  163.06   48.67        37.06       1.72
+360   NaN  177.35   98.69        37.17       1.51
+
+[252 rows x 5 columns]
+      Age Gender   Race Occupation  Height  Weight  Urination  Temperature
+242  58.0   Male  White    Retired  192.74  125.95       2.79         37.1
+ na in Polydipsia: Index([527, 302, 479], dtype='int64')
+ na in Polydipsia: Index([235], dtype='int64')
+
 CORRELATIONS
 Smallest:
 Age              Height             0.000440
 Height           Age                0.000440
 TCep             Alopecia           0.001775
 Alopecia         TCep               0.001775
-Irritability     Height             0.002301
 Height           Irritability       0.002301
-Urination        Height             0.002536
+Irritability     Height             0.002301
 Height           Urination          0.002536
-                 Diabetes           0.002772
+Urination        Height             0.002536
+Height           Diabetes           0.002772
 Diabetes         Height             0.002772
-Temperature      Polydipsia         0.003102
-Polydipsia       Temperature        0.003102
-Genital Thrush   Height             0.005116
 Height           Genital Thrush     0.005116
-Genital Thrush   Age                0.005321
+Genital Thrush   Height             0.005116
 Age              Genital Thrush     0.005321
+Genital Thrush   Age                0.005321
 Itching          Partial Paresis    0.005758
 Partial Paresis  Itching            0.005758
-                 Alopecia           0.005758
 Alopecia         Partial Paresis    0.005758
+Partial Paresis  Alopecia           0.005758
+Itching          Diabetes           0.007121
+Diabetes         Itching            0.007121
 dtype: float64
 -------------------------------
 Largest:
-Partial Paresis  Age                0.474772
 Age              Partial Paresis    0.474772
-Visual Blurring  Polyphagia         0.497045
+Partial Paresis  Age                0.474772
 Polyphagia       Visual Blurring    0.497045
-Age              Polyphagia         0.498516
+Visual Blurring  Polyphagia         0.497045
 Polyphagia       Age                0.498516
-Age              Visual Blurring    0.518729
+Age              Polyphagia         0.498516
+                 Visual Blurring    0.518729
 Visual Blurring  Age                0.518729
-Diabetes         TCep               0.540195
 TCep             Diabetes           0.540195
+Diabetes         TCep               0.540195
 Weight           Obesity            0.646952
 Obesity          Weight             0.646952
 Diabetes         Urination          0.653522
 Urination        Diabetes           0.653522
-Diabetes         Polydipsia         0.671450
-Polydipsia       Diabetes           0.671450
+Polydipsia       Diabetes           0.685772
+Diabetes         Polydipsia         0.685772
 BMI              Obesity            0.722175
 Obesity          BMI                0.722175
 Weight           BMI                0.920804
@@ -134,11 +154,11 @@ Index(['Age', 'Height', 'Weight', 'Polydipsia', 'Sudden Weight Loss',
 RESULTS
 
 Pruned tree
-Train score 0.8849206349206349
+Train score 0.8928571428571429
 Test score 0.8888888888888888
 
 Model summary on test set
 Accuracy	Precision	Recall
-0.92		0.91		0.87	Full Tree
+0.92		0.85		0.96	Full Tree
 0.89		0.90		0.78	Pruned Tree
 0.73		0.59		0.83	Naive Bayes
