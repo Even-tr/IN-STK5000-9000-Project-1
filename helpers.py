@@ -157,6 +157,18 @@ def fix_obesity(df, threshold=30):
   #df.loc[idx,]
   return df
 
+def fix_polydipsia(df, threshold=2.2):
+  idx = df[df['Polydipsia'].isna()].index
+  print(f' na in Polydipsia: {idx}')
+  # This is ugly ...
+
+  idx2 = df.loc[idx,].loc[df['Urination'] <= threshold].index
+  idx3 = df.loc[idx,].loc[df['Urination'] > threshold].index
+  df.loc[idx2,'Polydipsia'] = 0
+  df.loc[idx3,'Polydipsia'] = 1
+  #df.loc[idx,]
+  return df
+
 def model_summary(clf, X_test, y_test, header = True, name=''):
    # computes the accuracy, precision and recall for a classifier and prints a standard output.
    assert 'predict' in dir(clf), "Classifier must have a 'predict' method"
