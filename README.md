@@ -11,6 +11,9 @@ The main file is `script.py`, which was exctrated from `NotebookV2.ipynb`. Helpe
 >>> python3 script.py > output.txt
 ```
 
+## Extra dependencies
+We use `graphviz` to visualize trees and `dataframe_image` to make pretty tables from data frames
+
 ## Lenker til Arbeidsdocs ( NB: Lenker slettes før innlevering) 
 
 Slides : https://docs.google.com/presentation/d/1a-Tj9_T7rBCXoYdU1YaQMvUkQsBjyuVBzMkO3F2fw_k/edit#slide=id.g280707cb92d_0_32 
