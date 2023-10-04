@@ -1,0 +1,144 @@
+
+INITIAL DATA ANALYSIS
+Rows:  546 , Columns: 24
+---------------------------------------------------
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 546 entries, 0 to 545
+Data columns (total 24 columns):
+ #   Column              Non-Null Count  Dtype  
+---  ------              --------------  -----  
+ 0   Age                 534 non-null    float64
+ 1   Gender              542 non-null    object 
+ 2   Race                537 non-null    object 
+ 3   Occupation          534 non-null    object 
+ 4   GP                  539 non-null    object 
+ 5   Height              538 non-null    float64
+ 6   Weight              541 non-null    float64
+ 7   Obesity             538 non-null    object 
+ 8   Temperature         546 non-null    float64
+ 9   Urination           532 non-null    float64
+ 10  TCep                546 non-null    object 
+ 11  Polydipsia          540 non-null    object 
+ 12  Sudden Weight Loss  530 non-null    object 
+ 13  Weakness            541 non-null    object 
+ 14  Polyphagia          544 non-null    object 
+ 15  Genital Thrush      538 non-null    object 
+ 16  Visual Blurring     542 non-null    object 
+ 17  Itching             540 non-null    object 
+ 18  Irritability        541 non-null    object 
+ 19  Delayed Healing     538 non-null    object 
+ 20  Partial Paresis     531 non-null    object 
+ 21  Muscle Stiffness    534 non-null    object 
+ 22  Alopecia            536 non-null    object 
+ 23  Diabetes            546 non-null    object 
+dtypes: float64(5), object(19)
+memory usage: 102.5+ KB
+---------------------------------------------------
+Percentage of missing data: 0.01343101343101343
+---------------------------------------------------
+Number of duplicates: 26.0
+---------------------------------------------------
+
+Highlight bias in dataset - skewed proportion in Race and Occupation
+Race
+Asian     10
+Black      1
+White    526
+NaN        9
+dtype: int64
+Occupation
+Architect        41
+Consultant       41
+Dentist          39
+Economist        38
+Engineer         28
+Entrepreneur     31
+Journalist       30
+Judge            46
+Lawyer           32
+Manager          52
+Retired         155
+Student           1
+NaN              12
+dtype: int64
+
+MISSING DATA
+Total number of missing data: 176
+Percentage of missing data: 0.01343101343101343
+Samples with at least one missing value: 151
+Number of samples with 1 missing values: 128
+Percentage of samples with 1 missing values: 0.23443223443223443
+Number of samples with 2 missing values: 21
+Percentage of samples with 2 missing values: 0.038461538461538464
+Number of samples with 3 missing values: 2
+Percentage of samples with 3 missing values: 0.003663003663003663
+
+CORRELATIONS
+Smallest:
+Age              Height             0.000440
+Height           Age                0.000440
+TCep             Alopecia           0.001775
+Alopecia         TCep               0.001775
+Irritability     Height             0.002301
+Height           Irritability       0.002301
+Urination        Height             0.002536
+Height           Urination          0.002536
+                 Diabetes           0.002772
+Diabetes         Height             0.002772
+Temperature      Polydipsia         0.003102
+Polydipsia       Temperature        0.003102
+Genital Thrush   Height             0.005116
+Height           Genital Thrush     0.005116
+Genital Thrush   Age                0.005321
+Age              Genital Thrush     0.005321
+Itching          Partial Paresis    0.005758
+Partial Paresis  Itching            0.005758
+                 Alopecia           0.005758
+Alopecia         Partial Paresis    0.005758
+dtype: float64
+-------------------------------
+Largest:
+Partial Paresis  Age                0.474772
+Age              Partial Paresis    0.474772
+Visual Blurring  Polyphagia         0.497045
+Polyphagia       Visual Blurring    0.497045
+Age              Polyphagia         0.498516
+Polyphagia       Age                0.498516
+Age              Visual Blurring    0.518729
+Visual Blurring  Age                0.518729
+Diabetes         TCep               0.540195
+TCep             Diabetes           0.540195
+Weight           Obesity            0.646952
+Obesity          Weight             0.646952
+Diabetes         Urination          0.653522
+Urination        Diabetes           0.653522
+Diabetes         Polydipsia         0.671450
+Polydipsia       Diabetes           0.671450
+BMI              Obesity            0.722175
+Obesity          BMI                0.722175
+Weight           BMI                0.920804
+BMI              Weight             0.920804
+dtype: float64
+Temperature has low variance. Coefficient of variation = stdev/mean = 0.005419806906004156
+
+SELECTED FEATURES
+count: 15
+['Age', 'Height', 'Weight', 'Polydipsia', 'Sudden Weight Loss', 'Weakness', 'Polyphagia', 'Genital Thrush', 'Visual Blurring', 'Itching', 'Irritability', 'Delayed Healing', 'Partial Paresis', 'Muscle Stiffness', 'Alopecia']
+Number of rows: 252
+Number of features: 15
+Index(['Age', 'Height', 'Weight', 'Polydipsia', 'Sudden Weight Loss',
+       'Weakness', 'Polyphagia', 'Genital Thrush', 'Visual Blurring',
+       'Itching', 'Irritability', 'Delayed Healing', 'Partial Paresis',
+       'Muscle Stiffness', 'Alopecia'],
+      dtype='object')
+RESULTS
+
+Pruned tree
+Train score 0.8849206349206349
+Test score 0.8888888888888888
+
+Model summary on test set
+Accuracy	Precision	Recall
+0.92		0.91		0.87	Full Tree
+0.89		0.90		0.78	Pruned Tree
+0.73		0.59		0.83	Naive Bayes
