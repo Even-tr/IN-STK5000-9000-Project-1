@@ -18,8 +18,13 @@ from sklearn.metrics import accuracy_score,confusion_matrix, precision_recall_fs
 from sklearn.metrics import ConfusionMatrixDisplay
 
 # Local imports
+import graphviz
 from helpers import outliers_IQR, outliers_z_score, outliers_min_max, handle_outliers, fix_obesity
 from helpers import model_summary, combined_outliers, plot_pearsonsr_column_wise, plot_chi_square_p_values, plot_point_biserial_correlation
+from helpers import BMI
+from sklearn.naive_bayes import GaussianNB
+from sklearn import tree
+from sklearn.model_selection import cross_val_score
 
 np.random.seed(2023)
 
@@ -312,7 +317,6 @@ assert checkEqualColumns(train.columns, test.columns), f'train and test set does
 for i in zip(sorted(train.columns), sorted(test.columns)):
     assert i[0] == i[1], 'Train and test columns do not match'
 
-from helpers import BMI
 
 train['BMI'] = BMI(train['Weight'],  train['Height'])
 test['BMI'] = BMI(test['Weight'],  test['Height'])
@@ -409,15 +413,12 @@ print(X_train.columns)
 # ## Baseline classifier
 # A simple Naive Bayes classifier to witch we compare our results. (ours are barely better)
 
-from sklearn.naive_bayes import GaussianNB
 gnb = GaussianNB()
 gnb.fit(X_train, y_train)
 pass
 
 # ## Decision Tree
 
-from sklearn import tree
-from sklearn.model_selection import cross_val_score
 
 depths = list(range(1, 20))
 
@@ -450,7 +451,6 @@ for d in depths:
 clf = tree.DecisionTreeClassifier(max_depth=7, class_weight=weight if use_weights else None)
 clf_full_tree = clf.fit(X_train, y_train)
 
-import graphviz
 
 dot_data = tree.export_graphviz(clf_full_tree, out_file=None,
                       feature_names=selected_features,
@@ -480,7 +480,6 @@ X_test_plot['error'] = y_test > y_test_pred
 #g = sns.pairplot(X_test_plot.drop(binary_features, axis=1), hue='error')
 
 # ### Some Pruning
-# 
 # Code borrowed from https://www.kaggle.com/code/arunmohan003/pruning-decision-trees-tutorial
 
 path = clf_full_tree.cost_complexity_pruning_path(X_train, y_train)
@@ -503,7 +502,6 @@ plt.plot(ccp_alphas,depth,label='depth',drawstyle="steps-post")
 plt.legend()
 plt.savefig('images/pruned_tree_complexity.png')
 
-from sklearn.metrics import accuracy_score,confusion_matrix
 # helper function
 def plot_confusionmatrix(y_train_pred,y_train,dom, outfile=None):
     print(f'{dom} Confusion matrix')
