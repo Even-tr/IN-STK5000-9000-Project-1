@@ -19,7 +19,7 @@ from sklearn.metrics import ConfusionMatrixDisplay
 import graphviz
 from helpers import outliers_IQR, outliers_z_score, outliers_min_max, handle_outliers, fix_obesity
 from helpers import model_summary, combined_outliers, plot_pearsonsr_column_wise, plot_chi_square_p_values, plot_point_biserial_correlation
-from helpers import BMI
+from helpers import BMI, plot_confusionmatrix
 from sklearn.naive_bayes import GaussianNB
 from sklearn import tree
 from sklearn.model_selection import cross_val_score
@@ -335,21 +335,13 @@ print("-------------------------------")
 print("Largest:")
 print(corrs[-20:])
 #corr.style.background_gradient(cmap=cmap).set_precision(2)
-plt.savefig('images/cont_cont.png')
 
 plot_pearsonsr_column_wise(train[num_features + ['BMI']],kwargs={'cmap' : cmap, 'center':0}, outfile='images/cont_cont_corr.png')
-
-
 # reverse color as low p-value indicates strong dependence
 plot_chi_square_p_values(train[binary_features  + cat_features +  ['Diabetes']], kwargs={'cmap' : matplotlib.colormaps[cmap +'_r']}, outfile = 'images/cat_cat_corr.png')
-
-
-
-plot_point_biserial_correlation(train, cont=num_features, cat=binary_features + ['Diabetes'], kwargs={'cmap' : cmap}, outfile='images/cont_cat_corr.png')
 plot_point_biserial_correlation(train, cont=num_features + ['BMI'], cat=binary_features + ['Diabetes'], kwargs={'cmap' : cmap}, outfile = 'images/cont_cat_corr_bmi.png')
 
 #  We see that weight and obesity is strongly correlated, however BMI and obesity is not. Furthermore, diabetes has no correlation with either of them. This does not mean that BMI or weight are bad predictors, since the relationship between them could be non-linear. 
-# 
 #  Urination is indeed very correlated, which is apparent in the later plots.
 
 # ## Data exploration
@@ -410,13 +402,10 @@ print(X_train.columns)
 
 gnb = GaussianNB()
 gnb.fit(X_train, y_train)
-pass
 
-# ## Decision Tree
-
+# ## Decision Tree cross validation
 
 depths = list(range(1, 20))
-
 scores = {}
 
 """
@@ -439,10 +428,6 @@ for d in depths:
     scores[d] = score
     #print(f'Decision tree with depth={d}. cv score: {score}') # printing for debugging
 
-#print(scores.values())
-
-#plt.plot(scores.keys(), scores.values())
-
 clf = tree.DecisionTreeClassifier(max_depth=7, class_weight=weight if use_weights else None)
 clf_full_tree = clf.fit(X_train, y_train)
 
@@ -458,12 +443,7 @@ dot_data = tree.export_graphviz(clf_full_tree, out_file=None,
 #graph
 
 # Training accuracy
-
-#y_train_pred = clf.predict(X_train)
-#metrics.accuracy_score(y_train, y_train_pred)
-
 y_test_pred = clf_full_tree.predict(X_test)
-#metrics.accuracy_score(y_test, y_test_pred)
 
 confusion_mat = metrics.confusion_matrix(y_test, y_test_pred)
 con_mat_disp = ConfusionMatrixDisplay(confusion_mat, display_labels=clf.classes_)
@@ -497,17 +477,9 @@ plt.plot(ccp_alphas,depth,label='depth',drawstyle="steps-post")
 plt.legend()
 plt.savefig('images/pruned_tree_complexity.png')
 
-# helper function
-def plot_confusionmatrix(y_train_pred,y_train,dom, outfile=None):
-    print(f'{dom} Confusion matrix')
-    cf = confusion_matrix(y_train_pred,y_train)
-    sns.heatmap(cf,annot=True,yticklabels=classes
-               ,xticklabels=classes,cmap='Blues', fmt='g')
-    plt.tight_layout()
-    if outfile is None: 
-        plt.show()
 
-
+# Alpha 0.02 seems like a good trade off between size and complexity
+# as indicated by pruned_tree_complexity.png
 alpha = 0.02
 classes = ['Negative', 'Positive']
 clf_pruned_tree = tree.DecisionTreeClassifier(random_state=0,ccp_alpha=alpha,class_weight=weight if use_weights else None)
@@ -520,19 +492,11 @@ print('\nPruned tree')
 print(f'Train score {accuracy_score(y_train_pred,y_train)}')
 print(f'Test score {accuracy_score(y_test_pred,y_test)}')
 
-
 plt.figure(figsize=(20,20))
-features = selected_features
-tree.plot_tree(clf_pruned_tree,feature_names=features,class_names=classes,filled=True)
-
+tree.plot_tree(clf_pruned_tree,feature_names=selected_features,class_names=classes,filled=True)
 plt.savefig('images/pruned_tree.png')
 
 print('\nModel summary on test set')
 model_summary(clf_full_tree, X_test, y_test, name='Full Tree')
 model_summary(clf_pruned_tree, X_test, y_test, header=False, name='Pruned Tree')
 model_summary(gnb, X_test, y_test, header=False, name='Naive Bayes')
-
-
-
-
-# %%
