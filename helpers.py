@@ -186,7 +186,7 @@ def combined_outliers(train: pd.DataFrame, features: list, test: pd.DataFrame = 
   assert len(features) > 1
   #train  = train.copy()
   train = train[features]
-  train.fillna(train.mean())
+  train = train.fillna(train.mean())
   train = train.to_numpy()
   train = (train - train.mean())/(train.std()) # normalize to be indepentent of parameterization
   d_train = np.sqrt(np.square(train).sum(axis=1)) #Calculate square distance

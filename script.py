@@ -1,6 +1,4 @@
-# # Notebook Version 2
-# 
-# I made a condensed, and more flexible notebook from out initial. It contains the same processing, but not ass much intermittent reporting making navigation easier. One can of course add code where additional summary reports or graphics is needed. In addition, if the functions generating these reports are in a separate file, this notebook can stay condensed.
+# Analysis script
 import warnings
 warnings.simplefilter('always', category=UserWarning)
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -104,7 +102,6 @@ plt.title("Income")
 plt.savefig("images/diabetes_income.png")
 
 # ### Missing data - Part 1
-
 # #### Analyze
 
 missing_data_stats = pd.DataFrame(diabetes.isna().sum().sort_values(ascending=False), columns=['Count'])
@@ -131,7 +128,6 @@ except OSError:
     pass
 
 # ### Data Cleaning
-
 # #### Uniform formatting
 
 
@@ -144,7 +140,6 @@ diabetes = diabetes.replace({'yes':1, 'no':0})
 diabetes = diabetes.replace({'Positive':1, 'Negative':0})
 
 # #### Duplicates
-# 
 # We delete them. We assume they are caused by an error in the data collection, and it's unlikely that there are two correct instances with the exact same values.  
 
 diabetes = diabetes.drop_duplicates(keep='first')
@@ -176,7 +171,7 @@ assert len(diabetes.index) == len(train.index) + len(test.index)
 
 # ## Outliers
 # ### Univariate
-
+print('\nOUTLIERS')
 try:
     dfi.export(train[num_features].describe().loc[['min','max']], 'images/outliers_1.png')
 except OSError:
@@ -240,26 +235,26 @@ for f in ['Age', 'Urination']:
     plt.savefig('images/bp_'+f+'_after.png') 
 
 # ### Combined outliers
-# 
 # Combined outliers must be handled after fixing the individual ones, otherwise the same ones would be discovered
-
 # Just use formula from lecture stating that x should be standardized.
 
+print(train[num_features])
 
+zs_train = combined_outliers(train[num_features], num_features)
 
-zs_train = combined_outliers(train, num_features)
-
+print(sorted(zs_train))
+plt.clf()
+plt.figure()
 plt.scatter(range(0, len(zs_train)), sorted(zs_train))
 plt.savefig('images/combined_scatter.png') 
+plt.clf()
 
-train[zs_train > 3][['Age', 'Gender', 'Race', 'Occupation', 'Height', 'Weight', 'Urination', 'Temperature']]
+print(train[zs_train > 3][['Age', 'Gender', 'Race', 'Occupation', 'Height', 'Weight', 'Urination', 'Temperature']])
 
 # #### Handle
-
-#train = train[zs_train < 4]
-
-#zs_test = combined_outliers(test, num_features, test.copy())
-#test = test[zs_test < 4]
+train = train[zs_train < 4]
+zs_test = combined_outliers(test, num_features, test.copy())
+test = test[zs_test < 4]
 
 # ## Missing data - Part 2
 
@@ -539,3 +534,5 @@ model_summary(gnb, X_test, y_test, header=False, name='Naive Bayes')
 
 
 
+
+# %%
