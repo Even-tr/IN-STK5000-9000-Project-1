@@ -174,7 +174,7 @@ try:
 except OSError:
     pass
 
-# #### Identify Thresholds
+# #### Identify Boundaries
 
 # Init with domain knowledge
 train_outlier_bounds = pd.DataFrame(
@@ -234,8 +234,6 @@ for f in ['Age', 'Urination']:
 # Combined outliers must be handled after fixing the individual ones, otherwise the same ones would be discovered
 # Just use formula from lecture stating that x should be standardized.
 
-print(train[num_features])
-
 zs_train = combined_outliers(train[num_features], num_features)
 
 plt.clf()
@@ -243,8 +241,6 @@ plt.figure()
 plt.scatter(range(0, len(zs_train)), sorted(zs_train))
 plt.savefig('images/combined_scatter.png') 
 plt.clf()
-
-print(train[zs_train > 3][['Age', 'Gender', 'Race', 'Occupation', 'Height', 'Weight', 'Urination', 'Temperature']])
 
 try:
     dfi.export(train[zs_train > 3][['Age', 'Gender', 'Race', 'Occupation', 'Height', 'Weight', 'Urination', 'Temperature']], 'images/combined_outlier.png')
@@ -256,7 +252,9 @@ train = train[zs_train < 4]
 zs_test = combined_outliers(test, num_features, test.copy())
 test = test[zs_test < 4]
 
-# ## Missing data - Part 2
+# #####################################
+# ######## MISSING DATA PART 2 ########
+# #####################################
 
 # ### Deal with
 
@@ -322,21 +320,18 @@ assert len(train.index) > 10
 # ##############################
 # ######## CORRELATIONS ########
 # ##############################
+print('\nCORRELATIONS')
 
 corr = train.corr(numeric_only=True)
-#corr['Diabetes']
-#sns.heatmap(corr)
 
-print('\nCORRELATIONS')
+# Remove?
 # look at the smallest and largest in absolute value
-
 corrs = corr.stack().loc[lambda x : (x < 1)].abs().sort_values()
 print("Smallest:")
 print(corrs[:20])
 print("-------------------------------")
 print("Largest:")
 print(corrs[-20:])
-#corr.style.background_gradient(cmap=cmap).set_precision(2)
 
 cmap = 'coolwarm' # Added colour map as a variable for consistent plot style
 plot_pearsonsr_column_wise(train[num_features + ['BMI']],kwargs={'cmap' : cmap, 'center':0}, outfile='images/cont_cont_corr.png')
@@ -346,19 +341,6 @@ plot_point_biserial_correlation(train, cont=num_features + ['BMI'], cat=binary_f
 
 #  We see that weight and obesity is strongly correlated, however BMI and obesity is not. Furthermore, diabetes has no correlation with either of them. This does not mean that BMI or weight are bad predictors, since the relationship between them could be non-linear. 
 #  Urination is indeed very correlated, which is apparent in the later plots.
-
-# ## Data exploration
-
-# NOT USED REMOVE
-
-train_plot = train[num_features + ['BMI', 'Diabetes']]
-
-#diabetes_plot = train.drop('Gender', axis=1)
-#g = sns.pairplot(train_plot, hue='Diabetes')
-#plt.savefig('images/pairplot_diabetes.png')
-
-#g = sns.pairplot(train_plot, kind='reg')
-
 
 # ###################################
 # ######## FEATURE SELECTION ########
