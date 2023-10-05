@@ -7,22 +7,20 @@ import dataframe_image as dfi
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-import seaborn as sns
-import scipy.stats as stats
 
 from sklearn import metrics
 from sklearn.metrics import accuracy_score,confusion_matrix, precision_recall_fscore_support
 from sklearn.metrics import ConfusionMatrixDisplay
 
-# Local imports
-import graphviz
-from helpers import outliers_IQR, outliers_z_score, outliers_min_max, handle_outliers, fix_obesity
-from helpers import model_summary, combined_outliers, plot_pearsonsr_column_wise, plot_chi_square_p_values, plot_point_biserial_correlation
-from helpers import BMI, fix_polydipsia 
-from sklearn.naive_bayes import GaussianNB
 from sklearn import tree
 from sklearn.model_selection import cross_val_score
 
+# Local imports
+from helpers import outliers_IQR, outliers_z_score,  handle_outliers, fix_obesity##, outliers_min_max
+from helpers import model_summary, combined_outliers, plot_pearsonsr_column_wise, plot_chi_square_p_values, plot_point_biserial_correlation
+from helpers import BMI, fix_polydipsia 
+
+# Reproducibility
 np.random.seed(2023)
 
 
