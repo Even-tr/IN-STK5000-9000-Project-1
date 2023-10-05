@@ -18,7 +18,6 @@ def pearsonr_column_wise(df: pd.DataFrame):
 
             # Crosstab constructs the Contingency table for column i against j
             test_result = pearsonr(df[colnames[i]], df[colnames[j]])
-            #print(test_result.pvalue)
             res[i,j] = test_result.statistic
 
     return res
@@ -35,7 +34,6 @@ def chi_square_column_wise(df: pd.DataFrame):
             # Crosstab constructs the Contingency table for column i against j
             test_result = chi2_contingency(pd.crosstab(df[colnames[i]],
                                                        df[colnames[j]]).to_numpy())
-            #print(test_result.pvalue)
             res[i,j] = (test_result.pvalue > 0.05)*1
     return res
 
@@ -67,8 +65,6 @@ def plot_pearsonsr_column_wise(df: pd.DataFrame, outfile=None, kwargs={'cmap':'c
         plt.show()
 
 
-
-
 def plot_chi_square_p_values(df: pd.DataFrame, outfile=None, kwargs={'cmap':'crest'}):
     """
     plots a correlation matrix for categorical columns using Chi-square score.
@@ -96,7 +92,7 @@ def plot_chi_square_p_values(df: pd.DataFrame, outfile=None, kwargs={'cmap':'cre
     else:
         plt.show()
 
-# Modified to return min, max values so it can be used on test set
+# Return min, max values on IQR scores
 def outliers_IQR(df, feature):
   try:
 
@@ -109,19 +105,17 @@ def outliers_IQR(df, feature):
     upper = Q3 + 1.5 * IQR
 
     return lower, upper
-    #outliers = df[(df[feature] < lower) | (df[feature] > upper)]
-    #return outliers
   except Exception as e:
     print("invalid feature")
 
+
 def outliers_z_score(df, feature, no_z=3):
-  # returns blabla
   lower = df[feature].mean()-no_z*df[feature].std()
   upper = df[feature].mean()+no_z*df[feature].std()
   return lower, upper
 
 # Generalize min max rule used for age
-# Returns DF of outliers, maybe use index instead?
+# Returns DF with outliers
 def outliers_min_max(df, feature, min=None, max=None):
   try:
     cond_min = df[feature] < min if min != None else False
@@ -131,6 +125,8 @@ def outliers_min_max(df, feature, min=None, max=None):
     print("invalid feature")
     
 # Function that can be run on both training set and test set
+# to handle outliers.
+# Set to Nan if outside boundary
 def handle_outliers(df, df_bounds):
   for f in df_bounds.index:
       outliers = outliers_min_max(df, f,
@@ -145,24 +141,24 @@ def BMI(weight, height):
 
 def fix_obesity(df, threshold=30):
   idx = df[df['Obesity'].isna()].index
-  # This is ugly ...
+  
+  # indexes to identify BMI above or below threshold
   idx2 = df.loc[idx,].loc[BMI(df.loc[idx,]["Weight"], df.loc[idx,]["Height"]) <= threshold].index
-  # maybe not set obesity to 1 for high BMI, to avoid "Body Builder" problem
-  # It is possible to have high BMI without Obesity, the case of low BMI and Obesity harder to imagine
   idx3 = df.loc[idx,].loc[BMI(df.loc[idx,]["Weight"], df.loc[idx,]["Height"]) > threshold].index
-  #print(idx2)
-  #print(idx3)
+  
+  # set obesity from indexes above
   df.loc[idx2,'Obesity'] = 0
   df.loc[idx3,'Obesity'] = 1
-  #df.loc[idx,]
   return df
 
 def fix_polydipsia(df, threshold=2.5):
   idx = df[df['Polydipsia'].isna()].index
-  # This is ugly ...
-
+  
+  # indexes to identify Urination above or below threshold
   idx2 = df.loc[idx,].loc[df['Urination'] <= threshold].index
   idx3 = df.loc[idx,].loc[df['Urination'] > threshold].index
+
+  # set Polydipsia from indexes above
   df.loc[idx2,'Polydipsia'] = 0
   df.loc[idx3,'Polydipsia'] = 1
   #df.loc[idx,]
@@ -180,17 +176,6 @@ def model_summary(clf, X_test, y_test, header = True, name=''):
       print('Accuracy\tPrecision\tRecall')
    print(f'{acc :.2f}\t\t{prec:.2f}\t\t{recall:.2f}\t{name}')
 
-
-#def combined_outliers(df: pd.DataFrame, features: list):
-#   # Calculate combined outliers for continous features using euclidean norm
-#  assert len(features) > 1
-#  df = df[features].fillna(df.mean())
-#  #assert df.isna().sum().sum() == 0, 'No Na-s must be present'
-#  df = df.to_numpy()
-#  df = (df - df.mean())/(df.std()) # normalize to be indepentent of parameterization
-#  d = np.sqrt(np.square(df).sum(axis=1)) #Calculate square distance 
-#  z = (d-d.mean())/d.std()   # Normalize distances
-#  return z
 
 def combined_outliers(train: pd.DataFrame, features: list, test: pd.DataFrame = None):
    # Calculate combined outliers for continous features using euclidean norm
@@ -227,7 +212,6 @@ def point_biserial_correlation_column_wise(df: pd.DataFrame, cont: list, cat: li
 
             # Crosstab constructs the Contingency table for column i against j
             test_result = pointbiserialr(df[cont[i]], df[cat[j]])
-            #print(test_result.pvalue)
             res[i,j] = test_result.statistic
     return res
 
