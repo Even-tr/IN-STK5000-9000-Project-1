@@ -82,12 +82,16 @@ plt.title("Race")
 plt.savefig("images/diabetes_race.png")
 
 # Gender
-#demo_gender = pd.Series([.5, .5], index=['Male', 'Female'])
-#diabetes_gender = pd.DataFrame(diabetes.groupby('Gender').size(), columns = ['Dataset'])/diabetes.shape[0]
-#diabetes_gender = diabetes_gender.join(pd.DataFrame(demo_gender, columns = ['Population']))
-#diabetes_gender.plot.bar()
-#plt.title("Gender")
-#plt.savefig("images/diabetes_gender.png")
+
+grouped = diabetes.groupby(['Gender', 'Diabetes']).size().unstack(fill_value=0)
+ax = grouped.plot(kind='bar', stacked=True, figsize=(8, 6), color=['blue', 'red'])
+ax.set_xlabel('Gender')
+ax.set_ylabel('Count')
+ax.set_title('Diabetes Count by Gender')
+plt.xticks(rotation=0)
+plt.legend(title='Diabetes', loc='upper right', labels=['Negative', 'Positive'])
+plt.title("Gender-diabetes")
+plt.savefig("images/diabetes_gender-diabetes.png")
 
 # Income
 income_classes = [0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275]
