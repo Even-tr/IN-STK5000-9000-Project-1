@@ -9,15 +9,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from sklearn import metrics
-from sklearn.metrics import accuracy_score # ,confusion_matrix, precision_recall_fscore_support
+from sklearn.metrics import accuracy_score
 from sklearn.metrics import ConfusionMatrixDisplay
-
 from sklearn import tree
-#from sklearn.model_selection import cross_val_score
 
 # Local imports
 from helpers import outliers_IQR, outliers_z_score,  handle_outliers, fix_obesity
-from helpers import combined_outliers, plot_pearsonsr_column_wise, plot_chi_square_p_values, plot_point_biserial_correlation#, model_summary
+from helpers import combined_outliers, plot_pearsonsr_column_wise, plot_chi_square_p_values, plot_point_biserial_correlation
 from helpers import BMI, fix_polydipsia 
 
 # Reproducibility
