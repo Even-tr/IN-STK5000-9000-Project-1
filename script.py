@@ -1,4 +1,3 @@
-# Analysis script
 import warnings
 warnings.simplefilter('always', category=UserWarning)
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -27,8 +26,9 @@ from sklearn.model_selection import cross_val_score
 np.random.seed(2023)
 
 
-# # 2. Data Analysis and Processing
-
+# #################################################
+# ######## 2. DATA ANALYSIS AND PROCESSING ########
+# #################################################
 
 diabetes = pd.read_csv('diabetes.csv')
 
@@ -39,14 +39,15 @@ cat_features = ['Race',	'Occupation',	'GP']
 num_features = ['Age',	'Height',	'Weight',	'Temperature',	'Urination']
 one_hot_features = {} # for future use
 
-#print("Found:", len(cat_features+binary_features+num_features)+1) # +1 for Gender
-#print("In DS:", diabetes.shape[1]-1) # -1 for target
+
+# #######################################
+# ######## INITIAL DATA ANALYSIS ########
+# #######################################
 
 """
-# ## Initial Data Analysis
-# ### Questions
 # Code used for answering questions in this section
 """
+
 print('\nINITIAL DATA ANALYSIS')
 # number of entries
 print("Rows: ", diabetes.shape[0], ", Columns:", diabetes.shape[1])
@@ -54,10 +55,6 @@ print("---------------------------------------------------")
 
 # What type of values do you have?
 diabetes.info()
-print("---------------------------------------------------")
-
-# Missing data
-print("Percentage of missing data:", diabetes.isna().mean().mean())
 print("---------------------------------------------------")
 
 # Duplicates
@@ -85,12 +82,12 @@ plt.title("Race")
 plt.savefig("images/diabetes_race.png")
 
 # Gender
-demo_gender = pd.Series([.5, .5], index=['Male', 'Female'])
-diabetes_gender = pd.DataFrame(diabetes.groupby('Gender').size(), columns = ['Dataset'])/diabetes.shape[0]
-diabetes_gender = diabetes_gender.join(pd.DataFrame(demo_gender, columns = ['Population']))
-diabetes_gender.plot.bar()
-plt.title("Gender")
-plt.savefig("images/diabetes_gender.png")
+#demo_gender = pd.Series([.5, .5], index=['Male', 'Female'])
+#diabetes_gender = pd.DataFrame(diabetes.groupby('Gender').size(), columns = ['Dataset'])/diabetes.shape[0]
+#diabetes_gender = diabetes_gender.join(pd.DataFrame(demo_gender, columns = ['Population']))
+#diabetes_gender.plot.bar()
+#plt.title("Gender")
+#plt.savefig("images/diabetes_gender.png")
 
 # Income
 income_classes = [0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275]
@@ -101,26 +98,24 @@ ds_income.plot.bar()
 plt.title("Income")
 plt.savefig("images/diabetes_income.png")
 
-# ### Missing data - Part 1
-# #### Analyze
+# #####################################
+# ######## MISSING DATA PART 1 ########
+# #####################################
+
+print('\nMISSING DATA')
 
 missing_data_stats = pd.DataFrame(diabetes.isna().sum().sort_values(ascending=False), columns=['Count'])
 missing_data_stats2 = pd.DataFrame(diabetes.isna().mean().sort_values(ascending=False)*100, columns=['Percentage'])
 missing_data_stats = missing_data_stats.join(missing_data_stats2)
 
-print('\nMISSING DATA')
-print("Total number of missing data:", diabetes.isna().sum().sum())
 print("Percentage of missing data:", diabetes.isna().mean().mean())
 print("Samples with at least one missing value:", len(diabetes[diabetes.isnull().any(axis=1)]))
 
 # How many values are the samples missing
-i = 1
-nomis = diabetes[diabetes.isna().sum(axis=1) == i].shape[0]
-while nomis > 0:
-    print(f"Number of samples with {i} missing values: {nomis}")
-    print(f"Percentage of samples with {i} missing values: {nomis/len(diabetes)}")
-    i += 1
-    nomis = diabetes[diabetes.isna().sum(axis=1) == i].shape[0]
+nomis = diabetes[diabetes.isna().sum(axis=1) == 1].shape[0]
+print(f"Percentage of samples with 1 missing values: {nomis/len(diabetes)}")
+nomis = diabetes[diabetes.isna().sum(axis=1) > 1].shape[0]
+print(f"Percentage of samples with 2 or more missing values: {nomis/len(diabetes)}")
 
 try:
     dfi.export(missing_data_stats.round({'Count': 0, 'Percentage': 2}), 'images/missing_data.png')
@@ -129,7 +124,6 @@ except OSError:
 
 # ### Data Cleaning
 # #### Uniform formatting
-
 
 # Converts all binary features to lower case
 for f in binary_features:
@@ -140,8 +134,8 @@ diabetes = diabetes.replace({'yes':1, 'no':0})
 diabetes = diabetes.replace({'Positive':1, 'Negative':0})
 
 # #### Duplicates
-# We delete them. We assume they are caused by an error in the data collection, and it's unlikely that there are two correct instances with the exact same values.  
 
+# We delete them. We assume they are caused by an error in the data collection, and it's unlikely that there are two correct instances with the exact same values.  
 diabetes = diabetes.drop_duplicates(keep='first')
 
 # #### Meters to centimeters
@@ -169,7 +163,10 @@ train = diabetes.loc[train_idx]
 test = diabetes.drop(train_idx)
 assert len(diabetes.index) == len(train.index) + len(test.index)
 
-# ## Outliers
+# ##########################
+# ######## OUTLIERS ########
+# ##########################
+
 # ### Univariate
 print('\nOUTLIERS')
 try:
@@ -177,8 +174,7 @@ try:
 except OSError:
     pass
 
-# #### Identify
-# ##### Thresholds
+# #### Identify Thresholds
 
 # Init with domain knowledge
 train_outlier_bounds = pd.DataFrame(
@@ -210,7 +206,7 @@ except OSError:
     pass
 
 
-# I put the box plots back in, if we want to skip the step of "using visual tools", thats fine. We can just remove them again.
+# box plots for Age and Urination
 for f in ['Age', 'Urination']:
     plt.clf()
     bp = train.boxplot(f)
@@ -242,7 +238,6 @@ print(train[num_features])
 
 zs_train = combined_outliers(train[num_features], num_features)
 
-print(sorted(zs_train))
 plt.clf()
 plt.figure()
 plt.scatter(range(0, len(zs_train)), sorted(zs_train))
@@ -250,6 +245,11 @@ plt.savefig('images/combined_scatter.png')
 plt.clf()
 
 print(train[zs_train > 3][['Age', 'Gender', 'Race', 'Occupation', 'Height', 'Weight', 'Urination', 'Temperature']])
+
+try:
+    dfi.export(train[zs_train > 3][['Age', 'Gender', 'Race', 'Occupation', 'Height', 'Weight', 'Urination', 'Temperature']], 'images/combined_outlier.png')
+except OSError:
+    pass
 
 # #### Handle
 train = train[zs_train < 4]
@@ -319,7 +319,9 @@ test['BMI'] = BMI(test['Weight'],  test['Height'])
 
 assert len(train.index) > 10
 
-# ## Correlations
+# ##############################
+# ######## CORRELATIONS ########
+# ##############################
 
 corr = train.corr(numeric_only=True)
 #corr['Diabetes']
@@ -327,7 +329,7 @@ corr = train.corr(numeric_only=True)
 
 print('\nCORRELATIONS')
 # look at the smallest and largest in absolute value
-cmap = 'coolwarm' # Added colour map as a variable for consistent plot style
+
 corrs = corr.stack().loc[lambda x : (x < 1)].abs().sort_values()
 print("Smallest:")
 print(corrs[:20])
@@ -336,6 +338,7 @@ print("Largest:")
 print(corrs[-20:])
 #corr.style.background_gradient(cmap=cmap).set_precision(2)
 
+cmap = 'coolwarm' # Added colour map as a variable for consistent plot style
 plot_pearsonsr_column_wise(train[num_features + ['BMI']],kwargs={'cmap' : cmap, 'center':0}, outfile='images/cont_cont_corr.png')
 # reverse color as low p-value indicates strong dependence
 plot_chi_square_p_values(train[binary_features  + cat_features +  ['Diabetes']], kwargs={'cmap' : matplotlib.colormaps[cmap +'_r']}, outfile = 'images/cat_cat_corr.png')
@@ -351,13 +354,15 @@ plot_point_biserial_correlation(train, cont=num_features + ['BMI'], cat=binary_f
 train_plot = train[num_features + ['BMI', 'Diabetes']]
 
 #diabetes_plot = train.drop('Gender', axis=1)
-g = sns.pairplot(train_plot, hue='Diabetes')
-plt.savefig('images/pairplot_diabetes.png')
+#g = sns.pairplot(train_plot, hue='Diabetes')
+#plt.savefig('images/pairplot_diabetes.png')
 
-g = sns.pairplot(train_plot, kind='reg')
+#g = sns.pairplot(train_plot, kind='reg')
 
 
-# # 3. Feature Selection
+# ###################################
+# ######## FEATURE SELECTION ########
+# ###################################
 
 print("Temperature has low variance. Coefficient of variation = stdev/mean =", np.std(train['Temperature'])/np.mean(train['Temperature']))
 
@@ -387,7 +392,6 @@ y_test = test['Diabetes']
 
 for index in X_train.dtypes.keys():
     dtype = X_train.dtypes[index]
-    # Quite ugly and not very felxible test. Should be improved upon
     assert dtype == 'float64' or dtype == 'int64' or dtype == 'uint8', f"feature '{index}' is not of type float or int but {dtype}"
 
 
@@ -395,11 +399,14 @@ print('Number of rows:', len(X_train.index))
 print('Number of features:', len(X_train.columns))
 print(X_train.columns)
 
-# # 4. Classifier
+# ###################################
+# ######## DECISION TREE ############
+# ###################################
 
 # ## Baseline classifier
 # A simple Naive Bayes classifier to witch we compare our results. (ours are barely better)
 
+# Not used for anything , remove
 gnb = GaussianNB()
 gnb.fit(X_train, y_train)
 
@@ -408,51 +415,21 @@ gnb.fit(X_train, y_train)
 depths = list(range(1, 20))
 scores = {}
 
-"""
-By weighing misslcassification more severly, we can minimze type II error,
-which is desirable in the public health scenario. However, even with
-a very skewed weighing (1-100), we still get missclassification,
-indicatting that there are 'outliers' in the test set.
-
-Further investigation revealed that they typically where quite old or quite young,
-with a typical amount of urination.
-"""
-weight = {0: 1,
-          1:1}
-
-use_weights = False
-
 for d in depths:
-    clf_cv = tree.DecisionTreeClassifier(max_depth=d, class_weight=weight if use_weights else None)
+    clf_cv = tree.DecisionTreeClassifier(max_depth=d)
     score = cross_val_score(clf_cv, X_train, y_train, cv=5).mean()
     scores[d] = score
     #print(f'Decision tree with depth={d}. cv score: {score}') # printing for debugging
 
-clf = tree.DecisionTreeClassifier(max_depth=7, class_weight=weight if use_weights else None)
+clf = tree.DecisionTreeClassifier(max_depth=7)
 clf_full_tree = clf.fit(X_train, y_train)
 
-
-dot_data = tree.export_graphviz(clf_full_tree, out_file=None,
-                      feature_names=selected_features,
-                      class_names= ['Positive', 'Negative'], # this parameter doesen't seem to work
-                      filled=True, rounded=True,
-                      special_characters=True)
-#graph = graphviz.Source(dot_data)
-# Make Pdf
-#graph.render("Diabetes")
-#graph
-
-# Training accuracy
 y_test_pred = clf_full_tree.predict(X_test)
 
 confusion_mat = metrics.confusion_matrix(y_test, y_test_pred)
 con_mat_disp = ConfusionMatrixDisplay(confusion_mat, display_labels=clf.classes_)
 con_mat_disp.plot()
 plt.clf()
-
-X_test_plot = X_test.copy()
-X_test_plot['error'] = y_test > y_test_pred
-#g = sns.pairplot(X_test_plot.drop(binary_features, axis=1), hue='error')
 
 # ### Some Pruning
 # Code borrowed from https://www.kaggle.com/code/arunmohan003/pruning-decision-trees-tutorial
@@ -462,7 +439,7 @@ ccp_alphas, impurities = path.ccp_alphas, path.impurities
 # For each alpha we will append our model to a list
 clfs = []
 for ccp_alpha in ccp_alphas:
-    clf_tmp = tree.DecisionTreeClassifier(random_state=0, ccp_alpha=ccp_alpha, class_weight=weight if use_weights else None)
+    clf_tmp = tree.DecisionTreeClassifier(random_state=0, ccp_alpha=ccp_alpha)
     clf_tmp.fit(X_train, y_train)
     clfs.append(clf_tmp)
 
@@ -470,10 +447,10 @@ clfs = clfs[:-1]
 ccp_alphas = ccp_alphas[:-1]
 node_counts = [clf.tree_.node_count for clf in clfs]
 depth = [clf.tree_.max_depth for clf in clfs]
-plt.scatter(ccp_alphas,node_counts)
-plt.scatter(ccp_alphas,depth)
-plt.plot(ccp_alphas,node_counts,label='no of nodes',drawstyle="steps-post")
-plt.plot(ccp_alphas,depth,label='depth',drawstyle="steps-post")
+plt.scatter(ccp_alphas, node_counts)
+plt.scatter(ccp_alphas, depth)
+plt.plot(ccp_alphas, node_counts,label='no of nodes', drawstyle="steps-post")
+plt.plot(ccp_alphas, depth,label='depth', drawstyle="steps-post")
 plt.legend()
 plt.savefig('images/pruned_tree_complexity.png')
 
@@ -482,21 +459,16 @@ plt.savefig('images/pruned_tree_complexity.png')
 # as indicated by pruned_tree_complexity.png
 alpha = 0.02
 classes = ['Negative', 'Positive']
-clf_pruned_tree = tree.DecisionTreeClassifier(random_state=0,ccp_alpha=alpha,class_weight=weight if use_weights else None)
+clf_pruned_tree = tree.DecisionTreeClassifier(random_state=0, ccp_alpha=alpha)
 clf_pruned_tree.fit(X_train,y_train)
 y_train_pred = clf_pruned_tree.predict(X_train)
 y_test_pred = clf_pruned_tree.predict(X_test)
 
 print('RESULTS')
 print('\nPruned tree')
-print(f'Train score {accuracy_score(y_train_pred,y_train)}')
+#print(f'Train score {accuracy_score(y_train_pred,y_train)}')
 print(f'Test score {accuracy_score(y_test_pred,y_test)}')
 
-plt.figure(figsize=(20,20))
-tree.plot_tree(clf_pruned_tree,feature_names=selected_features,class_names=classes,filled=True)
+plt.figure(figsize=(20, 20))
+tree.plot_tree(clf_pruned_tree, feature_names=selected_features, class_names=classes, filled=True)
 plt.savefig('images/pruned_tree.png')
-
-print('\nModel summary on test set')
-model_summary(clf_full_tree, X_test, y_test, name='Full Tree')
-model_summary(clf_pruned_tree, X_test, y_test, header=False, name='Pruned Tree')
-model_summary(gnb, X_test, y_test, header=False, name='Naive Bayes')
