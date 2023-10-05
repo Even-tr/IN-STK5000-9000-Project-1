@@ -204,12 +204,13 @@ for f in ['Age', 'Urination']:
 train = handle_outliers(train, train_outlier_bounds)
 test = handle_outliers(test, train_outlier_bounds)
 
+# How does it look now? All min max values sensible ...
 try:
-    # How does it look now? All min max values sensible ...
     dfi.export(train[num_features].describe().loc[['min','max']], 'images/outliers_minmax_2.png') 
 except OSError:
     pass
 
+# Box plots after handling
 for f in ['Age', 'Urination']:
     plt.clf()
     bp = train.boxplot(f)
@@ -218,7 +219,6 @@ for f in ['Age', 'Urination']:
 
 # ### Combined outliers
 # Combined outliers must be handled after fixing the individual ones, otherwise the same ones would be discovered
-# Just use formula from lecture stating that x should be standardized.
 
 zs_train = combined_outliers(train[num_features], num_features)
 
@@ -313,7 +313,6 @@ print('\nCORRELATIONS')
 
 corr = train.corr(numeric_only=True)
 
-# Remove?
 # look at the smallest and largest in absolute value
 corrs = corr.stack().loc[lambda x : (x < 1)].abs().sort_values()
 print("Smallest:")

@@ -6,6 +6,9 @@ from scipy.stats import chi2_contingency, pearsonr
 from sklearn.metrics import accuracy_score,confusion_matrix, precision_recall_fscore_support
 from scipy.stats import pointbiserialr
 
+##########################
+###### CORRELATIONS ######
+##########################
 
 def pearsonr_column_wise(df: pd.DataFrame):
     n = len(df.columns)
@@ -29,8 +32,6 @@ def chi_square_column_wise(df: pd.DataFrame):
     res = np.zeros(shape=(n, n)) # to store results
     for i in range(n):
         for j in range(n):
-
-
             # Crosstab constructs the Contingency table for column i against j
             test_result = chi2_contingency(pd.crosstab(df[colnames[i]],
                                                        df[colnames[j]]).to_numpy())
@@ -92,6 +93,10 @@ def plot_chi_square_p_values(df: pd.DataFrame, outfile=None, kwargs={'cmap':'cre
     else:
         plt.show()
 
+######################
+###### OUTLIERS ######
+######################
+
 # Return min, max values on IQR scores
 def outliers_IQR(df, feature):
   try:
@@ -136,8 +141,13 @@ def handle_outliers(df, df_bounds):
       df.loc[outliers.index, f] = np.NaN
   return df
 
+##########################
+###### MISSING DATA ######
+##########################
+
 def BMI(weight, height):
   return weight/(height**2/(100*100))
+
 
 def fix_obesity(df, threshold=30):
   idx = df[df['Obesity'].isna()].index
@@ -151,6 +161,7 @@ def fix_obesity(df, threshold=30):
   df.loc[idx3,'Obesity'] = 1
   return df
 
+
 def fix_polydipsia(df, threshold=2.5):
   idx = df[df['Polydipsia'].isna()].index
   
@@ -163,6 +174,10 @@ def fix_polydipsia(df, threshold=2.5):
   df.loc[idx3,'Polydipsia'] = 1
   #df.loc[idx,]
   return df
+
+##################
+###### MISC ######
+##################
 
 def model_summary(clf, X_test, y_test, header = True, name=''):
    # computes the accuracy, precision and recall for a classifier and prints a standard output.
