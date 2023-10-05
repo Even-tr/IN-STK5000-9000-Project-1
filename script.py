@@ -82,7 +82,6 @@ plt.title("Race")
 plt.savefig("images/diabetes_race.png")
 
 # Gender
-
 grouped = diabetes.groupby(['Gender', 'Diabetes']).size().unstack(fill_value=0)
 ax = grouped.plot(kind='bar', stacked=True, figsize=(8, 6), color=['blue', 'red'])
 ax.set_xlabel('Gender')
@@ -352,21 +351,19 @@ plot_point_biserial_correlation(train, cont=num_features + ['BMI'], cat=binary_f
 # ###################################
 # ######## FEATURE SELECTION ########
 # ###################################
-
+print('FEATURE SELECTION')
 print("Temperature has low variance. Coefficient of variation = stdev/mean =", np.std(train['Temperature'])/np.mean(train['Temperature']))
 
 # Some sanity checks
 assert train.isna().sum().sum() == 0, 'No Na-s should be present after handling. They must have been introduced'
 
-#selected_features = ['Urination', 'Age'] + binary_features
 selected_features = num_features + binary_features 
 selected_features.remove('Urination')
 selected_features.remove('Temperature')
 selected_features.remove('Obesity')
 selected_features.remove('TCep')
 
-print(f'\nSELECTED FEATURES')
-print('count:',len(selected_features))
+print(f'\nSelected Features')
 print(selected_features)
 
 # ## Training model
@@ -391,24 +388,7 @@ print(X_train.columns)
 # ###################################
 # ######## DECISION TREE ############
 # ###################################
-
-# ## Baseline classifier
-# A simple Naive Bayes classifier to witch we compare our results. (ours are barely better)
-
-# Not used for anything , remove
-gnb = GaussianNB()
-gnb.fit(X_train, y_train)
-
-# ## Decision Tree cross validation
-
-depths = list(range(1, 20))
-scores = {}
-
-for d in depths:
-    clf_cv = tree.DecisionTreeClassifier(max_depth=d)
-    score = cross_val_score(clf_cv, X_train, y_train, cv=5).mean()
-    scores[d] = score
-    #print(f'Decision tree with depth={d}. cv score: {score}') # printing for debugging
+print('DECISION TREE')
 
 clf = tree.DecisionTreeClassifier(max_depth=7)
 clf_full_tree = clf.fit(X_train, y_train)
@@ -456,7 +436,7 @@ y_test_pred = clf_pruned_tree.predict(X_test)
 print('RESULTS')
 print('\nPruned tree')
 #print(f'Train score {accuracy_score(y_train_pred,y_train)}')
-print(f'Test score {accuracy_score(y_test_pred,y_test)}')
+print(f'Test Accuarcy {accuracy_score(y_test_pred,y_test)}')
 
 plt.figure(figsize=(20, 20))
 tree.plot_tree(clf_pruned_tree, feature_names=selected_features, class_names=classes, filled=True)
