@@ -22,7 +22,6 @@ def pearsonr_column_wise(df: pd.DataFrame):
 
     return res
 
-
 def chi_square_column_wise(df: pd.DataFrame):
     n = len(df.columns)
     colnames = df.columns
@@ -37,7 +36,6 @@ def chi_square_column_wise(df: pd.DataFrame):
                                                        df[colnames[j]]).to_numpy())
             res[i,j] = (test_result.pvalue > 0.05)*1
     return res
-
 
 def plot_pearsonsr_column_wise(df: pd.DataFrame, outfile=None, kwargs={'cmap':'crest'}):
     """
@@ -116,7 +114,16 @@ def outliers_z_score(df, feature, no_z=3):
   upper = df[feature].mean()+no_z*df[feature].std()
   return lower, upper
 
-
+# Generalize min max rule used for age
+# Returns DF with outliers
+def outliers_min_max(df, feature, min=None, max=None):
+  try:
+    cond_min = df[feature] < min if min != None else False
+    cond_max = df[feature] > max if max != None else False
+    return df[cond_min | cond_max ]
+  except Exception as e:
+    print("invalid feature")
+    
 # Function that can be run on both training set and test set
 # to handle outliers.
 # Set to Nan if outside boundary
@@ -129,10 +136,8 @@ def handle_outliers(df, df_bounds):
       df.loc[outliers.index, f] = np.NaN
   return df
 
-
 def BMI(weight, height):
   return weight/(height**2/(100*100))
-
 
 def fix_obesity(df, threshold=30):
   idx = df[df['Obesity'].isna()].index
@@ -146,7 +151,6 @@ def fix_obesity(df, threshold=30):
   df.loc[idx3,'Obesity'] = 1
   return df
 
-
 def fix_polydipsia(df, threshold=2.5):
   idx = df[df['Polydipsia'].isna()].index
   
@@ -159,7 +163,6 @@ def fix_polydipsia(df, threshold=2.5):
   df.loc[idx3,'Polydipsia'] = 1
   #df.loc[idx,]
   return df
-
 
 def model_summary(clf, X_test, y_test, header = True, name=''):
    # computes the accuracy, precision and recall for a classifier and prints a standard output.
@@ -194,6 +197,7 @@ def combined_outliers(train: pd.DataFrame, features: list, test: pd.DataFrame = 
      z_test = (d_test-d_test.mean())/d_test.std()   # Normalize distances
      ret = z_test
   return ret
+
 
 
 def point_biserial_correlation_column_wise(df: pd.DataFrame, cont: list, cat: list):
