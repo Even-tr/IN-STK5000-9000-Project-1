@@ -116,13 +116,13 @@ def outliers_z_score(df, feature, no_z=3):
 
 # Generalize min max rule used for age
 # Returns DF with outliers
-def outliers_min_max(df, feature, min=None, max=None):
-  try:
-    cond_min = df[feature] < min if min != None else False
-    cond_max = df[feature] > max if max != None else False
-    return df[cond_min | cond_max ]
-  except Exception as e:
-    print("invalid feature")
+#def outliers_min_max(df, feature, min=None, max=None):
+#  try:
+#    cond_min = df[feature] < min if min != None else False
+#    cond_max = df[feature] > max if max != None else False
+#    return df[cond_min | cond_max ]
+#  except Exception as e:
+#    print("invalid feature")
     
 # Function that can be run on both training set and test set
 # to handle outliers.
