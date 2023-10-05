@@ -196,18 +196,6 @@ try:
 except OSError:
     pass
 
-# ##### Extent in our data set
-outliers_2 = pd.concat(
-    [outliers_min_max(train, 'Age', train_outlier_bounds.loc['Age', 'Lower'], train_outlier_bounds.loc['Age', 'Upper']),
-    outliers_min_max(train, 'Urination', train_outlier_bounds.loc['Urination', 'Lower'], train_outlier_bounds.loc['Urination', 'Upper'])]
-)
-
-try:
-    dfi.export(outliers_2[['Age', 'Height', 'Weight', 'Urination', 'Temperature']], 'images/outliers_2.png')
-except OSError:
-    pass
-
-
 # box plots for Age and Urination
 for f in ['Age', 'Urination']:
     plt.clf()
