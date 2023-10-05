@@ -157,7 +157,7 @@ def fix_obesity(df, threshold=30):
   #df.loc[idx,]
   return df
 
-def fix_polydipsia(df, threshold=2.2):
+def fix_polydipsia(df, threshold=2.5):
   idx = df[df['Polydipsia'].isna()].index
   print(f' na in Polydipsia: {idx}')
   # This is ugly ...

@@ -18,7 +18,7 @@ from sklearn.metrics import ConfusionMatrixDisplay
 import graphviz
 from helpers import outliers_IQR, outliers_z_score, outliers_min_max, handle_outliers, fix_obesity
 from helpers import model_summary, combined_outliers, plot_pearsonsr_column_wise, plot_chi_square_p_values, plot_point_biserial_correlation
-from helpers import BMI 
+from helpers import BMI, fix_polydipsia 
 from sklearn.naive_bayes import GaussianNB
 from sklearn import tree
 from sklearn.model_selection import cross_val_score
@@ -265,6 +265,9 @@ test = test[zs_test < 4]
 
 train = fix_obesity(train)
 test = fix_obesity(test)
+
+train = fix_polydipsia(train)
+test = fix_polydipsia(test)
 
 # #### Missing Binaries
 
