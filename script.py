@@ -171,7 +171,6 @@ assert len(diabetes.index) == len(train.index) + len(test.index)
 # ##########################
 
 # ### Univariate
-print('\nOUTLIERS')
 try:
     dfi.export(train[num_features].describe().loc[['min','max']], 'images/outliers_1.png')
 except OSError:
@@ -351,7 +350,7 @@ plot_point_biserial_correlation(train, cont=num_features + ['BMI'], cat=binary_f
 # ###################################
 # ######## FEATURE SELECTION ########
 # ###################################
-print('FEATURE SELECTION')
+print('\nFEATURE SELECTION')
 print("Temperature has low variance. Coefficient of variation = stdev/mean =", np.std(train['Temperature'])/np.mean(train['Temperature']))
 
 # Some sanity checks
@@ -388,7 +387,7 @@ print(X_train.columns)
 # ###################################
 # ######## DECISION TREE ############
 # ###################################
-print('DECISION TREE')
+print('\nDECISION TREE')
 
 clf = tree.DecisionTreeClassifier(max_depth=7)
 clf_full_tree = clf.fit(X_train, y_train)
@@ -434,7 +433,7 @@ y_train_pred = clf_pruned_tree.predict(X_train)
 y_test_pred = clf_pruned_tree.predict(X_test)
 
 print('RESULTS')
-print('\nPruned tree')
+print('Pruned tree')
 #print(f'Train score {accuracy_score(y_train_pred,y_train)}')
 print(f'Test Accuarcy {accuracy_score(y_test_pred,y_test)}')
 
