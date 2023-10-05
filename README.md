@@ -12,5 +12,6 @@ The main file is `script.py`. Helper functions is in `helpers.py`. The consol ou
 ```
 
 ## Extra dependencies
-We use `dataframe_image` to make pretty tables from data frames
+
+We followed the advice given in Lecture 2 to not use a Jupyter Notebook. Having done that, we need a way to print dataframes for our presentation. We use the `dataframe_image` to make pretty tables from data frames.s 
 
